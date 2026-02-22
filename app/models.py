@@ -4,6 +4,7 @@ from sqlalchemy.orm import declarative_base
 Base = declarative_base()
 
 
+# Map model for telemetry table
 class Telemetry(Base):
     __tablename__ = "telemetry"
 
