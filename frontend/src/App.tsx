@@ -49,8 +49,13 @@ function App() {
   const handleAddTelemetry = async (e: React.FormEvent) => {
     e.preventDefault()
     // Requirement: Input Validation
-    if (!formData.satelliteId) return alert("Satellite ID is required.")
-    if (formData.altitude <= 0 || formData.velocity <= 0) return alert("Altitude/Velocity must be positive.")
+    if (formData.altitude <= 0 || formData.velocity <= 0) {
+      return alert("Altitude and velocity must be positive.")
+    }
+    
+    if (!formData.satelliteId) {
+      return alert("Satellite ID is required.")
+    }
 
     try {
       await axios.post(API_BASE, {
@@ -75,7 +80,7 @@ function App() {
           </h1>
           <p className="text-slate-500 text-sm font-mono mt-1">SATELLITE GROUND SEGMENT // LIVE MONITOR</p>
         </div>
-        <button onClick={fetchTelemetry} className="bg-slate-800 hover:bg-slate-700 text-black px-4 py-2 rounded-md transition-all flex items-center gap-2 border border-slate-700">
+        <button onClick={fetchTelemetry} className="bg-white hover:bg-slate-200 text-black px-4 py-2 rounded-md transition-all flex items-center gap-2 border border-slate-300 font-bold">
           <Activity size={16} /> REFRESH
         </button>
       </header>
@@ -89,28 +94,52 @@ function App() {
             </h2>
             <form onSubmit={handleAddTelemetry} className="space-y-4">
               <div>
-                <label className="text-xs text-slate-500 block mb-1">VEHICLE ID</label>
-                <input type="text" placeholder="e.g. VOYAGER-1" className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-sm focus:border-blue-500 outline-none" value={formData.satelliteId} onChange={(e) => setFormData({...formData, satelliteId: e.target.value})}/>
+                <label htmlFor="sat-id" className="text-xs text-slate-500 block mb-1">VEHICLE ID</label>
+                <input 
+                  id="sat-id"
+                  type="text" 
+                  placeholder="e.g. VOYAGER-1" 
+                  className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-sm focus:border-blue-500 outline-none" 
+                  value={formData.satelliteId} 
+                  onChange={(e) => setFormData({...formData, satelliteId: e.target.value})}
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs text-slate-500 block mb-1">ALTITUDE (KM)</label>
-                  <input type="number" className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-sm" value={formData.altitude} onChange={(e) => setFormData({...formData, altitude: parseFloat(e.target.value)})}/>
+                  <label htmlFor="altitude-input" className="text-xs text-slate-500 block mb-1">ALTITUDE (KM)</label>
+                  <input 
+                    id="altitude-input"
+                    type="number" 
+                    className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-sm" 
+                    value={formData.altitude} 
+                    onChange={(e) => setFormData({...formData, altitude: parseFloat(e.target.value)})}
+                  />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-500 block mb-1">VELOCITY (KM/S)</label>
-                  <input type="number" className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-sm" value={formData.velocity} onChange={(e) => setFormData({...formData, velocity: parseFloat(e.target.value)})}/>
+                  <label htmlFor="velocity-input" className="text-xs text-slate-500 block mb-1">VELOCITY (KM/S)</label>
+                  <input 
+                    id="velocity-input"
+                    type="number" 
+                    className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-sm" 
+                    value={formData.velocity} 
+                    onChange={(e) => setFormData({...formData, velocity: parseFloat(e.target.value)})}
+                  />
                 </div>
               </div>
               <div>
-                <label className="text-xs text-slate-500 block mb-1">HEALTH STATUS</label>
-                <select className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-sm" value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})}>
+                <label htmlFor="status-select" className="text-xs text-slate-500 block mb-1">HEALTH STATUS</label>
+                <select 
+                  id="status-select"
+                  className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-sm" 
+                  value={formData.status} 
+                  onChange={(e) => setFormData({...formData, status: e.target.value})}
+                >
                   <option value="healthy">HEALTHY</option>
                   <option value="warning">WARNING</option>
                   <option value="critical">CRITICAL</option>
                 </select>
               </div>
-              <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-black py-2 rounded font-bold text-sm mt-2 transition-colors">
+              <button type="submit" className="w-full bg-blue-500 hover:bg-blue-400 text-black py-2 rounded font-bold text-sm mt-2 transition-colors uppercase tracking-widest">
                 TRANSMIT PACKET
               </button>
             </form>

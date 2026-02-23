@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from pydantic import BaseModel, AwareDatetime, Field, field_validator
+from pydantic import BaseModel, AwareDatetime, ConfigDict, Field, field_validator
 from typing import List
 from uuid import UUID
 
@@ -15,8 +15,7 @@ class TelemetrySchema(BaseModel):
     velocity: float
     status: str
 
-    class Config:
-        from_attributes = True  # Enables mapping to pydantic model
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TelemetryCreate(BaseModel):
@@ -56,5 +55,4 @@ class TelemetryResponse(BaseModel):
     offset: int
     data: List[TelemetrySchema]
 
-    class Config:
-        from_attributes = True  # Enables mapping to pydantic model
+    model_config = ConfigDict(from_attributes=True)
