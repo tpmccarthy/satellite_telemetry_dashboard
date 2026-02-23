@@ -75,11 +75,11 @@ def create_telemetry(
         velocity=payload.velocity,
         status=payload.status
     )
-    
+
     db.add(telemetry)
     db.commit()
     db.refresh(telemetry)
-    
+
     return telemetry
 
 
@@ -97,13 +97,20 @@ def get_telemetry(
     Retrieve telemetry from database
 
     Args:
-        satellitedId (Optional[str], optional): satellite identifier. Defaults to None.
-        status (Optional[str], optional): mnemonic status. Defaults to None.
-        start_time (Optional[datetime], optional): start time for pagination. Defaults to None.
-        end_time (Optional[datetime], optional): end time for pagination. Defaults to None.
-        limit (int, optional): number of items to return. Defaults to Query(100, gt=0, le=100).
-        offset (int, optional): skip "offset" number of records. Defaults to Query(0, ge=0).
-        db (Session, optional): activate db session. Defaults to Depends(get_db).
+        satellitedId (Optional[str], optional): satellite identifier.
+            Default: None.
+        status (Optional[str], optional): mnemonic status.
+            Defaults to None.
+        start_time (Optional[datetime], optional): start time for pagination.
+            Default: None.
+        end_time (Optional[datetime], optional): end time for pagination.
+            Default: None.
+        limit (int, optional): number of items to return.
+            Default: Query(100, gt=0, le=100).
+        offset (int, optional): skip "offset" number of records.
+            Default: Query(0, ge=0).
+        db (Session, optional): activate db session.
+            Default: Depends(get_db).
 
     Returns:
         TelemetryResponse: class object from schema
@@ -141,7 +148,8 @@ def get_telemetry_by_id(
 
     Args:
         id (UUID): database record UUID
-        db (Session, optional): activate db session. Defaults to Depends(get_db)
+        db (Session, optional): activate db session.
+            Default: Depends(get_db)
 
     Returns:
         Telemetry: class object from schema
@@ -150,7 +158,11 @@ def get_telemetry_by_id(
         HTTPException: if no record found
     """
 
-    telemetry_record = db.query(TelemetryModel).filter(TelemetryModel.id == id).first()
+    telemetry_record = (
+        db.query(TelemetryModel)
+        .filter(TelemetryModel.id == id)
+        .first()
+    )
 
     if not telemetry_record:
         raise HTTPException(status_code=404, detail="Telemetry not found")
@@ -167,7 +179,8 @@ def delete_telemetry_by_id(
 
     Args:
         id (UUID): database record UUID
-        db (Session, optional): activate db session. Defaults to Depends(get_db).
+        db (Session, optional): activate db session.
+            Default: Depends(get_db).
 
     Returns:
         dict: delete confirmation message

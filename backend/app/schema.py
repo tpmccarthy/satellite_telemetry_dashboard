@@ -1,5 +1,11 @@
 from datetime import datetime, timezone
-from pydantic import BaseModel, AwareDatetime, ConfigDict, Field, field_validator
+from pydantic import (
+    BaseModel,
+    AwareDatetime,
+    ConfigDict,
+    Field,
+    field_validator
+)
 from typing import List
 from uuid import UUID
 
@@ -34,14 +40,15 @@ class TelemetryCreate(BaseModel):
     def normalize_to_utc(cls, v: datetime) -> datetime:
         """
         Ensures all telemetry is stored on a single universal timeline.
-        :param cls: class definition
-        :type cls: type
-        :param v: parsed datetime object
-        :type v: datetime.datetime
 
-        :return: timezone aware object in UTC
-        :rtype: datetime.datetime
+        Args:
+            cls(class): class definition
+            v(datetime): parsed datetime object
+
+        Returns:
+            UTC aware datetime object
         """
+
         return v.astimezone(timezone.utc)
 
 
