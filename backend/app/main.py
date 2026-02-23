@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Depends, Query
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from app.db import SessionLocal, init_db
@@ -25,6 +26,16 @@ async def lifespan(app: FastAPI):
 
 # Launch App
 app = FastAPI(lifespan=lifespan)
+
+
+# Instantiate middleware for frontend/backend communications
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # Set up db session
