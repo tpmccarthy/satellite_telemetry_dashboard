@@ -75,7 +75,7 @@ function App() {
           </h1>
           <p className="text-slate-500 text-sm font-mono mt-1">SATELLITE GROUND SEGMENT // LIVE MONITOR</p>
         </div>
-        <button onClick={fetchTelemetry} className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-md transition-all flex items-center gap-2 border border-slate-700">
+        <button onClick={fetchTelemetry} className="bg-slate-800 hover:bg-slate-700 text-black px-4 py-2 rounded-md transition-all flex items-center gap-2 border border-slate-700">
           <Activity size={16} /> REFRESH
         </button>
       </header>
@@ -110,7 +110,7 @@ function App() {
                   <option value="critical">CRITICAL</option>
                 </select>
               </div>
-              <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 py-2 rounded font-bold text-sm mt-2 transition-colors">
+              <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-black py-2 rounded font-bold text-sm mt-2 transition-colors">
                 TRANSMIT PACKET
               </button>
             </form>

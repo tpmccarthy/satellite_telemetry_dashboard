@@ -176,7 +176,11 @@ def delete_telemetry_by_id(
         HTTPException: if no record found
     """
 
-    telemetry = db.query(TelemetryModel).filter(TelemetryModel.id == id).first()
+    telemetry = (
+        db.query(TelemetryModel)
+        .filter(TelemetryModel.id == str(id))
+        .first()
+    )
 
     if not telemetry:
         raise HTTPException(status_code=404, detail="Telemetry not found")
