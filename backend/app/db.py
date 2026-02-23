@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.models import Base
 
-DATABASE_URL = "sqlite:///./telemetry.db"
+DATABASE_URL = "sqlite:///./data/telemetry.db"
 
 engine = create_engine(
     DATABASE_URL,

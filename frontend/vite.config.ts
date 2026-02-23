@@ -10,4 +10,9 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'], 
     include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
   },
+  server: {
+    host: '0.0.0.0', // Allows external (Docker) access
+    port: 5173,
+  }
 })
+
