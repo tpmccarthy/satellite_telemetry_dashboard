@@ -109,6 +109,17 @@ Frontend available at: [http://localhost:5173](http://localhost:5173)
 
 ## Backend
 
+Built with Python + FastAPI.
+
+Features:
+* RESTful telemetry API
+* Server-side filtering & pagination
+* Data validation via Pydantic
+* UUID-based record lifecycle management
+* SQLite persistence
+* Swagger documentation
+* Async test coverage
+
 Entry point: `main.py`
 
 Run command (inside container):
@@ -145,7 +156,6 @@ Built with Vite + React.
 Features:
 
 * Telemetry table (Satellite ID, Timestamp, Altitude, Velocity, Status)
-* Filter by Satellite ID and Status
 * Add telemetry entry
 * Delete telemetry entry
 * Client-side sorting ascending/descending (Timestamp, Altitude, Velocity)
