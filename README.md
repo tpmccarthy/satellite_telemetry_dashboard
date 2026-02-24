@@ -54,6 +54,33 @@ docker compose down
 
 ---
 
+### Docker (Single Container Runs)
+
+You may build and run each service independently without Docker Compose.
+
+#### Backend
+
+```bash
+cd backend
+docker build -t telemetry-backend .
+docker run -p 8000:8000 -v telemetry_data:/app/data telemetry-backend
+```
+
+Backend available at: [http://localhost:8000](http://localhost:8000)
+Swagger Docs: [http://localhost:8000/docs#/](http://localhost:8000/docs#/)
+
+#### Frontend
+
+```bash
+cd frontend
+docker build -t telemetry-frontend .
+docker run -p 5173:80 telemetry-frontend
+```
+
+Frontend available at: [http://localhost:5173](http://localhost:5173)
+
+---
+
 ### Running Without Docker (Optional)
 
 #### Backend
