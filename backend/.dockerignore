@@ -1,12 +1,13 @@
 # backend/.dockerignore
-*.db
-*.sqlite3
+.venv
 venv/
-.venv/
 __pycache__/
 *.pyc
 .pytest_cache/
-Dockerfile
-.dockerignore
-.git/
+
+data/
+*.db
+*.sqlite3
+
+.git
 .gitignore
