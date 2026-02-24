@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import axios from 'axios'
 import { Satellite, Activity, Trash2, Plus, AlertCircle, Loader2 } from 'lucide-react'
 
@@ -8,8 +8,10 @@ function App() {
   const [telemetry, setTelemetry] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [sortField, setSortField] = useState<"timestamp" | "altitude" | "velocity">("timestamp")
+  const [sortField, setSortField] = useState<"timestamp" | "satelliteId" | "status" | "altitude" | "velocity">("timestamp")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc")
+  const [statusRotation, setStatusRotation] = useState(0)
+  const [vehicleRotation, setVehicleRotation] = useState(0)
 
   // Form State (State Management requirement)
   const [formData, setFormData] = useState({
@@ -19,19 +21,74 @@ function App() {
     status: 'healthy'
   })
 
-  const sortedTelemetry = [...telemetry].sort((a: any, b: any) => {
-    let valA = a[sortField]
-    let valB = b[sortField]
+  const sortedTelemetry = useMemo(() => {
+    return [...telemetry].sort((a, b) => {
 
-    if (sortField === "timestamp") {
-      valA = new Date(valA).getTime()
-      valB = new Date(valB).getTime()
-    }
+      // STATUS ROTATION
+      if (sortField === "status") {
+        const rotations = [
+          ["critical", "warning", "healthy"],
+          ["warning", "healthy", "critical"],
+          ["healthy", "critical", "warning"]
+        ]
 
-    if (valA < valB) return sortDirection === "asc" ? -1 : 1
-    if (valA > valB) return sortDirection === "asc" ? 1 : -1
-    return 0
-  })
+        const order = rotations[statusRotation]
+
+        const rank: Record<string, number> = {
+          [order[0]]: 3,
+          [order[1]]: 2,
+          [order[2]]: 1
+        }
+
+        return (rank[b.status] ?? 0) - (rank[a.status] ?? 0)
+      }
+
+      // VEHICLE ROTATION
+      if (sortField === "satelliteId") {
+        const uniqueVehicles = Array.from(
+          new Set(telemetry.map(t => t.satelliteId))
+        ).sort((a, b) =>
+          a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" })
+        )
+
+        const rotationIndex = vehicleRotation % uniqueVehicles.length
+
+        const rotated = [
+          ...uniqueVehicles.slice(rotationIndex),
+          ...uniqueVehicles.slice(0, rotationIndex)
+        ]
+
+        const rank: Record<string, number> = {}
+        rotated.forEach((v, i) => {
+          rank[v] = rotated.length - i
+        })
+
+        return (rank[b.satelliteId] ?? 0) - (rank[a.satelliteId] ?? 0)
+      }
+
+      // TIMESTAMP
+      let valA = a[sortField]
+      let valB = b[sortField]
+
+      if (sortField === "timestamp") {
+        valA = new Date(valA).getTime()
+        valB = new Date(valB).getTime()
+      }
+
+      // STRING COMPARISON
+      if (typeof valA === "string" && typeof valB === "string") {
+        const result = valA.localeCompare(valB, undefined, {
+          numeric: true,
+          sensitivity: "base"
+        })
+        return sortDirection === "asc" ? result : -result
+      }
+
+      // NUMERIC
+      const result = valA - valB
+      return sortDirection === "asc" ? result : -result
+    })
+  }, [telemetry, sortField, sortDirection, statusRotation, vehicleRotation])
 
   const fetchTelemetry = async () => {
     setLoading(true)
@@ -46,12 +103,25 @@ function App() {
     }
   }
 
-  const handleSort = (field: "timestamp" | "altitude" | "velocity") => {
+  const handleSort = (field: typeof sortField) => {
+    if (field === "status") {
+      setSortField("status")
+      setStatusRotation(prev => (prev + 1) % 3)
+      return
+    }
+
+    if (field === "satelliteId") {
+      setSortField("satelliteId")
+      setVehicleRotation(prev => prev + 1)
+      return
+    }
+
+    // Normal binary sort for other fields
     if (field === sortField) {
       setSortDirection(prev => (prev === "asc" ? "desc" : "asc"))
     } else {
       setSortField(field)
-      setSortDirection("desc")
+      setSortDirection("asc")
     }
   }
 
@@ -164,7 +234,7 @@ function App() {
                 </select>
               </div>
               <button type="submit" className="w-full bg-blue-500 hover:bg-blue-400 text-black py-2 rounded font-bold text-sm mt-2 transition-colors uppercase tracking-widest">
-                TRANSMIT PACKET
+                SUBMIT
               </button>
             </form>
           </div>
@@ -189,7 +259,12 @@ function App() {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-slate-800/50 text-slate-400 text-[10px] tracking-widest uppercase border-b border-slate-800">
-                      <th className="p-4">VEHICLE</th>
+                      <th 
+                        className="p-4 text-right cursor-pointer hover:text-white"
+                        onClick={() => handleSort("satelliteId")}
+                      >
+                        VEHICLE {sortField === "satelliteId" && "↻"}
+                      </th>
                       <th
                         className="p-4 text-right cursor-pointer hover:text-white"
                         onClick={() => handleSort("altitude")}
@@ -202,7 +277,12 @@ function App() {
                       >
                         VELOCITY {sortField === "velocity" && (sortDirection === "asc" ? "▲" : "▼")}
                       </th>
-                      <th className="p-4">STATUS</th>
+                      <th
+                        className="p-4 text=right cursor-pointer hover:text-white"
+                        onClick={() => handleSort("status")}
+                      >
+                        STATUS {sortField === "status" && "↻"}
+                      </th>
                       <th
                         className="p-4 cursor-pointer hover:text-white"
                         onClick={() => handleSort("timestamp")}
