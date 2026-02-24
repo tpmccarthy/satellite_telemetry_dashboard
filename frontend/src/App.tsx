@@ -140,7 +140,7 @@ function App() {
   }
 
   // POST Implementation with Validation
-  const handleAddTelemetry = async (e: React.FormEvent) => {
+  const handleAddTelemetry = async (e: React.SyntheticEvent) => {
     e.preventDefault()
     // Requirement: Input Validation
     if (formData.altitude <= 0 || formData.velocity <= 0) {
