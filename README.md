@@ -87,6 +87,8 @@ Frontend available at: [http://localhost:5173](http://localhost:5173)
 
 ```bash
 cd backend
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
@@ -160,6 +162,8 @@ API base URL is hardcoded in `App.tsx`.
 
 ```bash
 cd backend
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 pytest
 ```
