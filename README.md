@@ -1,6 +1,6 @@
 # Satellite Telemetry Dashboard
 
-Implementation of Satellite Telemetry Dashboard take-home assignment.
+Implementation of the Satellite Telemetry Dashboard take-home assignment.
 
 ## Stack
 
@@ -54,6 +54,30 @@ docker compose down
 
 ---
 
+### Running Without Docker (Optional)
+
+#### Backend
+
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Backend available at: [http://localhost:8000](http://localhost:8000)
+
+#### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend available at: [http://localhost:5173](http://localhost:5173)
+
+---
+
 ## Backend
 
 Entry point: `main.py`
@@ -95,7 +119,7 @@ Features:
 * Filter by Satellite ID and Status
 * Add telemetry entry
 * Delete telemetry entry
-* Client-side sorting (Satellite ID, Timestamp, Altitude, Velocity, Status)
+* Client-side sorting (Timestamp, Altitude, Velocity)
 * Loading indicator
 * Error handling
 
