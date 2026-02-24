@@ -1,10 +1,12 @@
 import pytest
 import httpx
 from app.main import app
+from app.db import init_db
 
 
 @pytest.fixture
 def transport():
+    init_db()  # ensures telemetry tables are created
     return httpx.ASGITransport(app=app)
 
 

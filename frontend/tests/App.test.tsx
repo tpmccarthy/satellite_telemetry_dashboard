@@ -27,7 +27,7 @@ describe('Mission Control Dashboard - Full Lifecycle', () => {
     render(<App />)
     
     const altInput = screen.getByLabelText(/ALTITUDE/i)
-    const submitBtn = screen.getByText(/TRANSMIT PACKET/i)
+    const submitBtn = screen.getByText(/SUBMIT/i)
 
     // Act: Enter a negative number
     fireEvent.change(altInput, { target: { value: '-100' } })
@@ -53,7 +53,7 @@ describe('Mission Control Dashboard - Full Lifecycle', () => {
     fireEvent.change(screen.getByLabelText(/ALTITUDE/i), { target: { value: '250' } })
     fireEvent.change(screen.getByLabelText(/VELOCITY/i), { target: { value: '8' } })
     
-    fireEvent.click(screen.getByText(/TRANSMIT PACKET/i))
+    fireEvent.click(screen.getByText(/SUBMIT/i))
 
     await waitFor(() => {
       // Verify the POST was sent with the correct payload structure
