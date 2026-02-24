@@ -8,7 +8,9 @@ function App() {
   const [telemetry, setTelemetry] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  
+  const [sortField, setSortField] = useState<"timestamp" | "altitude" | "velocity">("timestamp")
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc")
+
   // Form State (State Management requirement)
   const [formData, setFormData] = useState({
     satelliteId: '',
@@ -17,15 +19,25 @@ function App() {
     status: 'healthy'
   })
 
+  const sortedTelemetry = [...telemetry].sort((a: any, b: any) => {
+    let valA = a[sortField]
+    let valB = b[sortField]
+
+    if (sortField === "timestamp") {
+      valA = new Date(valA).getTime()
+      valB = new Date(valB).getTime()
+    }
+
+    if (valA < valB) return sortDirection === "asc" ? -1 : 1
+    if (valA > valB) return sortDirection === "asc" ? 1 : -1
+    return 0
+  })
+
   const fetchTelemetry = async () => {
     setLoading(true)
     try {
       const response = await axios.get(API_BASE)
-      // Bonus: Automatic Sorting by newest first
-      const sorted = response.data.data.sort((a: any, b: any) => 
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-      )
-      setTelemetry(sorted)
+      setTelemetry(response.data.data)  // no sorting here
       setError(null)
     } catch (err) {
       setError("Ground Station Offline: Unable to sync with fleet.")
@@ -34,14 +46,26 @@ function App() {
     }
   }
 
+  const handleSort = (field: "timestamp" | "altitude" | "velocity") => {
+    if (field === sortField) {
+      setSortDirection(prev => (prev === "asc" ? "desc" : "asc"))
+    } else {
+      setSortField(field)
+      setSortDirection("desc")
+    }
+  }
+
   // DELETE Implementation
   const deleteEntry = async (id: string) => {
     if (!window.confirm("Confirm deletion of telemetry record?")) return
+    setLoading(true)
     try {
       await axios.delete(`${API_BASE}/${id}`)
-      fetchTelemetry() // Refresh after delete
+      await fetchTelemetry()
     } catch (err) {
-      alert("Failed to delete record. System link error.")
+      alert("Failed to delete record.")
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -166,15 +190,30 @@ function App() {
                   <thead>
                     <tr className="bg-slate-800/50 text-slate-400 text-[10px] tracking-widest uppercase border-b border-slate-800">
                       <th className="p-4">VEHICLE</th>
-                      <th className="p-4 text-right">ALTITUDE</th>
-                      <th className="p-4 text-right">VELOCITY</th>
+                      <th
+                        className="p-4 text-right cursor-pointer hover:text-white"
+                        onClick={() => handleSort("altitude")}
+                      >
+                        ALTITUDE {sortField === "altitude" && (sortDirection === "asc" ? "▲" : "▼")}
+                      </th>
+                      <th
+                        className="p-4 text-right cursor-pointer hover:text-white"
+                        onClick={() => handleSort("velocity")}
+                      >
+                        VELOCITY {sortField === "velocity" && (sortDirection === "asc" ? "▲" : "▼")}
+                      </th>
                       <th className="p-4">STATUS</th>
-                      <th className="p-4">TIMESTAMP</th>
+                      <th
+                        className="p-4 cursor-pointer hover:text-white"
+                        onClick={() => handleSort("timestamp")}
+                      >
+                        TIMESTAMP {sortField === "timestamp" && (sortDirection === "asc" ? "▲" : "▼")}
+                      </th>
                       <th className="p-4 text-center">CMD</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800">
-                    {telemetry.map((t) => (
+                    {sortedTelemetry.map((t) => (
                       <tr key={t.id} className="hover:bg-blue-900/10 transition-colors">
                         <td className="p-4 font-mono text-blue-400 text-sm">{t.satelliteId}</td>
                         <td className="p-4 text-right font-mono text-sm">{t.altitude.toLocaleString()} km</td>
@@ -189,7 +228,7 @@ function App() {
                           </span>
                         </td>
                         <td className="p-4 text-slate-500 text-xs font-mono">
-                          {new Date(t.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                          {new Date(t.timestamp).toISOString()}
                         </td>
                         <td className="p-4 text-center">
                           <button onClick={() => deleteEntry(t.id)} className="text-slate-600 hover:text-red-500 transition-colors">
