@@ -148,7 +148,8 @@ Features:
 * Filter by Satellite ID and Status
 * Add telemetry entry
 * Delete telemetry entry
-* Client-side sorting (Timestamp, Altitude, Velocity)
+* Client-side sorting ascending/descending (Timestamp, Altitude, Velocity)
+* Client-side sorting rotation (Vehicle, Status)
 * Loading indicator
 * Error handling
 
